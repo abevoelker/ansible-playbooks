@@ -1,0 +1,10 @@
+---
+- hosts: dbservers
+  sudo: yes
+  roles:
+    - common
+    - postgres
+    - elasticsearch
+    - rabbitmq
+    - redis
+    - iptables

@@ -1,0 +1,3 @@
+---
+- name: Ensure the {{ user }} user exists
+  user: name={{ user }} state=present remove=yes shell=/bin/bash

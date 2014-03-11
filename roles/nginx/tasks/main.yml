@@ -1,0 +1,7 @@
+---
+- name: Add nginx stable PPA
+  apt_repository: repo='ppa:nginx/stable'
+- name: Ensure nginx is installed
+  apt: pkg=nginx state=present update_cache=yes
+- name: Ensure nginx is running
+  service: name=nginx state=started

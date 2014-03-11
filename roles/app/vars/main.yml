@@ -1,0 +1,7 @@
+---
+user: web
+ruby_version: 2.0.0-p247
+application: ansible-playbooks
+app_dir: /var/www/{{ application }}
+repository: git@github.com:abevoelker/ansible-playbooks.git
+branch: master

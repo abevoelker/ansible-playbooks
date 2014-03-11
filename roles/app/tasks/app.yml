@@ -1,0 +1,11 @@
+---
+- name: Ensure application source destination directory exists
+  file: path={{ app_dir }} owner={{ user }} state=directory
+- name: Checkout/update application source
+  git: repo={{ repository }} dest={{ app_dir }} version={{ branch }}
+  sudo: yes
+  sudo_user: "{{ user }}"
+- name: Install bundler gem
+  shell: RBENV_VERSION={{ ruby_version }} gem install bundler creates=~/.rbenv/versions/{{ ruby_version }}/bin/bundler
+  sudo: yes
+  sudo_user: "{{ user }} -i"

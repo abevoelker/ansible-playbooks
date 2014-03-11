@@ -1,0 +1,52 @@
+---
+- name: Install Postgres dependencies
+  apt: pkg={{ item }} state=present update_cache=yes cache_valid_time=3600
+  sudo: yes
+  with_items:
+    - libreadline-dev
+    - zlib1g-dev
+    - flex
+    - bison
+    - libxml2-dev
+    - libxslt1-dev
+    - libssl-dev
+    - libpq-dev
+- pip: name=psycopg2 extra_args=--no-use-wheel
+- name: Add PostgreSQL Global Development Group apt source
+  template: src=pgdg.j2 dest=/etc/apt/sources.list.d/pgdg.list
+- name: Add PGDG repository key
+  apt_key: url=http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc state=present
+- name: Install Postgres {{postgres_version}}
+  apt: pkg={{ item }} state=present update_cache=yes
+  with_items:
+       - postgresql-{{postgres_version}}
+       - postgresql-contrib-{{postgres_version}}
+       - postgresql-server-dev-{{postgres_version}}
+       - postgresql-plpython-{{postgres_version}}
+       - postgresql-{{postgres_version}}-plv8
+# These config files are specific to 9.3 and may need refreshing if applied to new PG versions
+- name: Update Postgres connection configuration (postgresql.conf)
+  copy: src=postgresql.conf dest=/etc/postgresql/{{postgres_version}}/main/
+    backup=yes
+    mode=640
+    owner=postgres
+    group=postgres
+  sudo: yes
+  sudo_user: postgres
+  notify:
+    - restart postgresql
+- name: Update Postgres authentication configuration (pg_hba.conf)
+  copy: src=pg_hba.conf dest=/etc/postgresql/{{postgres_version}}/main/
+    backup=yes
+    mode=644
+    owner=postgres
+    group=postgres
+  sudo: yes
+  sudo_user: postgres
+  notify:
+    - restart postgresql
+- meta: flush_handlers
+- name: Create postgres database user
+  postgresql_user: user=postgres password=password role_attr_flags=SUPERUSER
+  sudo: yes
+  sudo_user: postgres

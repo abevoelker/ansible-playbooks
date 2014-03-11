@@ -1,0 +1,39 @@
+- name: Install MRI prerequisites
+  apt: pkg={{ item }} state=present update_cache=yes cache_valid_time=3600
+  sudo: yes
+  with_items:
+    - zlib1g
+    - zlib1g-dev
+    - libssl-dev
+    - libyaml-dev
+    - libxml2-dev
+    - autoconf
+    - libc6-dev
+    - automake
+    - libtool
+    - bison
+    - pkg-config
+    - build-essential
+    - openssl
+    - libreadline6
+    - libreadline6-dev
+- name: Install rbenv
+  git: repo=git://github.com/sstephenson/rbenv.git dest=~/.rbenv
+  sudo: yes
+  sudo_user: "{{ user }}"
+- name: Source rbenv in ~/.bash_profile
+  lineinfile: dest=~/.bash_profile line='export PATH="$HOME/.rbenv/bin:$PATH"' state=present insertafter=EOF create=yes
+  sudo: yes
+  sudo_user: "{{ user }}"
+- name: Add rbenv init to ~/.bash_profile to enable shims and autocomplete
+  lineinfile: dest=~/.bash_profile line='eval "$(rbenv init -)"' state=present insertafter=EOF create=yes
+  sudo: yes
+  sudo_user: "{{ user }}"
+- name: Install ruby-build as an rbenv plugin
+  git: repo=git://github.com/sstephenson/ruby-build.git dest=~/.rbenv/plugins/ruby-build
+  sudo: yes
+  sudo_user: "{{ user }}"
+- name: Install Ruby {{ ruby_version }}
+  shell: rbenv install {{ ruby_version }} creates=~/.rbenv/versions/{{ ruby_version }} executable=/bin/bash
+  sudo: yes
+  sudo_user: "{{ user }} -i"

@@ -1,0 +1,12 @@
+- name: Add Chris Lea's Redis PPA
+  apt_repository: repo='ppa:chris-lea/redis-server'
+- name: Ensure Redis is installed
+  apt: pkg=redis-server state=present update_cache=yes
+- name: Update Redis configuration (redis.conf)
+  copy: src=redis.conf dest=/etc/redis/
+    backup=yes
+    mode=640
+  notify:
+    - restart redis
+- name: Ensure Redis is running
+  service: name=redis-server state=started

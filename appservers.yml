@@ -1,0 +1,8 @@
+---
+- hosts: appservers
+  sudo: yes
+  roles:
+    - common
+    - nginx
+    - app
+    - iptables

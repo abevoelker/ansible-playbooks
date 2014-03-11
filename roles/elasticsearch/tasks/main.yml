@@ -1,0 +1,13 @@
+---
+- name: Install Elasticsearch dependencies
+  apt: pkg={{ item }} state=present update_cache=yes cache_valid_time=3600
+  with_items:
+    - openjdk-7-jdk
+- name: Add Elasticsearch repository key
+  apt_key: url=http://packages.elasticsearch.org/GPG-KEY-elasticsearch state=present
+- name: Add Elasticsearch apt source
+  copy: src=elasticsearch.list dest=/etc/apt/sources.list.d/
+- name: Ensure Elasticsearch is installed
+  apt: pkg=elasticsearch state=present update_cache=yes
+- name: Ensure Elasticsearch is running
+  service: name=elasticsearch state=started
